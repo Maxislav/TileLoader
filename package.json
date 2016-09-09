@@ -1,0 +1,15 @@
+{
+  "name": "tile-loader-proxi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "express": "^4.14.0"
+  },
+  "author": "maxislav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wartechrnd/iis-awp-front/issues"
+  }
+}
