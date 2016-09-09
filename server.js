@@ -26,17 +26,49 @@ http.createServer(app).listen(app.get('port'), function(){
 	console.log( ('Server start on port: ' + port).blue );
 });
 
+function randomInteger(min, max) {
+	var rand = min + Math.random() * (max - min)
+	rand = Math.round(rand);
+	return rand;
+}
+let domainPrefix = ['b','c'];
 
 
+class Timer{
+	constructor(tile){
+		this.timeStart = new Date()
+		this.tile = tile;
+	}
+
+	getTimeStart(){
+		return this.timeStart
+	}
+	getTile(){
+		return this.tile
+	}
+	getTimeEnd(){
+		this.timeEnd = new Date()
+		return this.timeEnd.getTime() - this.timeStart.getTime() + ' ms'
+	}
+
+
+}
 
 app.use('/tileloader/:z/:x/:y', function (req, res, next) {
+
+
+
+
 	let options = {
 		port: 80,
-		hostname: 'c.tile.openstreetmap.org',
+		hostname: domainPrefix[randomInteger(0,1)]+'.tile.openstreetmap.org',
 		method: req.method,
 		path: '/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
 		headers: req.headers
 	};
+	let timer  = new  Timer(options.path);
+
+//	console.log(timer.getTile() + ' ' + timer.getTimeStart())
 
 	options.headers['user-agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36';
 
@@ -46,6 +78,11 @@ app.use('/tileloader/:z/:x/:y', function (req, res, next) {
 
 	proxyRequest.on( 'response', function ( proxyResponse ) {
 		proxyResponse.on( 'data', function ( chunk ) {
+			console.log(proxyResponse.statusCode + ' - ' +  timer.getTile() + ' ' + timer.getTimeEnd());
+			//console.log(timer.getTile() + ' ' + timer.getTimeEnd());
+
+
+
 			res.write( chunk, 'binary' );
 		} );
 		proxyResponse.on( 'end', function () {
