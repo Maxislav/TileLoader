@@ -50,59 +50,57 @@ class Timer{
 		this.timeEnd = new Date()
 		return (this.timeEnd.getTime() - this.timeStart.getTime())/1000 + ' s'
 	}
-
-
 }
+let stackCount =0;
 
 app.use('/tileloader/:z/:x/:y', function (req, res, next) {
+	let timeOut =randomInteger(10,5000);
+	setTimeout(()=>{
+		let options = {
+			port: 80,
+			hostname: domainPrefix[randomInteger(0,1)]+'.tile.openstreetmap.org',
+			method: req.method,
+			path: '/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
+			headers: req.headers
+		};
+		let timer  = new  Timer(options.path);
 
+		++stackCount;
+		options.headers['user-agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36';
 
+		console.log('options.path = > ', options.path);
 
+		var proxyRequest = http.request( options );
 
-	let options = {
-		port: 80,
-		hostname: domainPrefix[randomInteger(0,1)]+'.tile.openstreetmap.org',
-		method: req.method,
-		path: '/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
-		headers: req.headers
-	};
-	let timer  = new  Timer(options.path);
+		proxyRequest.on( 'response', function ( proxyResponse ) {
+			proxyResponse.on( 'data', function ( chunk ) {
 
-//	console.log(timer.getTile() + ' ' + timer.getTimeStart())
-
-	options.headers['user-agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36';
-
-	console.log('options.path = > ', options.path);
-
-	var proxyRequest = http.request( options );
-
-	proxyRequest.on( 'response', function ( proxyResponse ) {
-		proxyResponse.on( 'data', function ( chunk ) {
-			//console.log(proxyResponse.statusCode + ' - ' +  timer.getTile() + ' ' + timer.getTimeEnd()+' '+chunk.length);
-			//console.log(timer.getTile() + ' ' + timer.getTimeEnd());
-
-
-
-			res.write( chunk, 'binary' );
+				res.write( chunk, 'binary' );
+			} );
+			proxyResponse.on( 'end', function () {
+				--stackCount;
+				console.log('end', timer.getTile() + ' ' + timer.getTimeEnd()+' stackCount: ' + stackCount + ' timeOut: '+ timeOut);
+				res.end();
+			} );
+			res.writeHead( proxyResponse.statusCode, proxyResponse.headers );
 		} );
-		proxyResponse.on( 'end', function () {
-			console.log('end', timer.getTile() + ' ' + timer.getTimeEnd());
-			res.end();
+		proxyRequest.on('error', function(err){
+			console.error(err);
+			//proxyRequest.end();
+			res.statusCode = 204;
+			res.end( 'No connect' );
+		});
+		req.on( 'data', function ( chunk ) {
+			proxyRequest.write( chunk, 'binary' );
 		} );
-		res.writeHead( proxyResponse.statusCode, proxyResponse.headers );
-	} );
-	proxyRequest.on('error', function(err){
-		console.error(err);
-		//proxyRequest.end();
-		res.statusCode = 204;
-		res.end( 'No connect' );
-	});
-	req.on( 'data', function ( chunk ) {
-		proxyRequest.write( chunk, 'binary' );
-	} );
-	req.on( 'end', function () {
-		proxyRequest.end();
-	} );
+		req.on( 'end', function () {
+			proxyRequest.end();
+		} );
+	}, timeOut);
+
+
+
+
 
 } );
 
