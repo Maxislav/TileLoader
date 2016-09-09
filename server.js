@@ -70,7 +70,7 @@ app.use('/tileloader/:z/:x/:y', function (req, res, next) {
 
 //	console.log(timer.getTile() + ' ' + timer.getTimeStart())
 
-	options.headers['user-agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36';
+	options.headers['user-agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36';
 
 	console.log('options.path = > ', options.path);
 
@@ -78,7 +78,7 @@ app.use('/tileloader/:z/:x/:y', function (req, res, next) {
 
 	proxyRequest.on( 'response', function ( proxyResponse ) {
 		proxyResponse.on( 'data', function ( chunk ) {
-			console.log(proxyResponse.statusCode + ' - ' +  timer.getTile() + ' ' + timer.getTimeEnd());
+			//console.log(proxyResponse.statusCode + ' - ' +  timer.getTile() + ' ' + timer.getTimeEnd()+' '+chunk.length);
 			//console.log(timer.getTile() + ' ' + timer.getTimeEnd());
 
 
@@ -86,6 +86,7 @@ app.use('/tileloader/:z/:x/:y', function (req, res, next) {
 			res.write( chunk, 'binary' );
 		} );
 		proxyResponse.on( 'end', function () {
+			console.log('end', timer.getTile() + ' ' + timer.getTimeEnd());
 			res.end();
 		} );
 		res.writeHead( proxyResponse.statusCode, proxyResponse.headers );
