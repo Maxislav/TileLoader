@@ -48,7 +48,7 @@ class Timer{
 	}
 	getTimeEnd(){
 		this.timeEnd = new Date()
-		return this.timeEnd.getTime() - this.timeStart.getTime() + ' ms'
+		return (this.timeEnd.getTime() - this.timeStart.getTime())/1000 + ' s'
 	}
 
 
