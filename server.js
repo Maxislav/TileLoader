@@ -54,20 +54,37 @@ class Timer{
 let stackCount =0;
 
 app.use('/tileloader/:z/:x/:y', function (req, res, next) {
-	let timeOut =randomInteger(10,5000);
+	let timeOut =randomInteger(1,2);
 	setTimeout(()=>{
-		let options = {
-			port: 80,
-			hostname: domainPrefix[randomInteger(0,1)]+'.tile.openstreetmap.org',
-			method: req.method,
-			path: '/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
-			headers: req.headers
-		};
+
+		let opt = [
+			{
+				port: 80,
+				hostname: domainPrefix[randomInteger(0,1)]+'.tile.openstreetmap.org',
+				method: req.method,
+				path: '/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
+				headers: req.headers
+			},
+
+			/* {
+				port: 8081,
+				hostname: '178.62.44.54',
+				method: req.method,
+				path: '/tileloader/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
+				headers: req.headers
+			}*/
+		];
+
+
+		//let options = opt[randomInteger(0,1)]
+		let options = opt[0]
+
 		let timer  = new  Timer(options.path);
 
 		++stackCount;
 		options.headers['user-agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36';
-
+		options.headers['Referer'] = 'http://178.62.44.54/dev/map.html';
+//Referer:http://178.62.44.54/dev/map.html
 		console.log('options.path = > ', options.path);
 
 		var proxyRequest = http.request( options );
