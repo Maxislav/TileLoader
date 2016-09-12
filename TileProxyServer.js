@@ -14,6 +14,18 @@ var express = require("express" ),
 	mime = require( 'mime' ),
 	colors = require( 'colors' );
 
+const exec = require('child_process').exec;
+
+
+exec("java -jar jTileDownloader-0-6-1.jar", (error, stdout, stderr) => {
+	if (error) {
+		console.error(`exec error: ${error}`);
+		return;
+	}
+	console.log(`stdout: ${stdout}`);
+	console.log(`stderr: ${stderr}`);
+});
+
 
 
 var config = JSON.parse(fs.readFileSync('./server.config.json', "utf8" ).toString());
@@ -27,7 +39,7 @@ http.createServer(app).listen(app.get('port'), function(){
 });
 
 function randomInteger(min, max) {
-	var rand = min + Math.random() * (max - min)
+	var rand = min + Math.random() * (max - min);
 	rand = Math.round(rand);
 	return rand;
 }
@@ -36,7 +48,7 @@ let domainPrefix = ['b','c'];
 
 class Timer{
 	constructor(tile){
-		this.timeStart = new Date()
+		this.timeStart = new Date();
 		this.tile = tile;
 	}
 
@@ -47,7 +59,7 @@ class Timer{
 		return this.tile
 	}
 	getTimeEnd(){
-		this.timeEnd = new Date()
+		this.timeEnd = new Date();
 		return (this.timeEnd.getTime() - this.timeStart.getTime())/1000 + ' s'
 	}
 }
@@ -64,9 +76,9 @@ app.use('/tileloader/:z/:x/:y', function (req, res, next) {
 				method: req.method,
 				path: '/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
 				headers: req.headers
-			},
+			}
 
-			/* {
+			/* ,{
 				port: 8081,
 				hostname: '178.62.44.54',
 				method: req.method,
