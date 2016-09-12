@@ -1,7 +1,4 @@
-- JTileDownloader - 
-
-
-Alt. TilesServer http://127.0.0.1:8081
+- JTileDownloader through proxy node server-
 
 Command Line:
  npm install
