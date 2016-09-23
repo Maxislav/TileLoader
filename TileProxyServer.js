@@ -67,6 +67,7 @@ let stackCount =0;
 
 app.use('/tileloader/:z/:x/:y', function (req, res, next) {
 	let timeOut =randomInteger(1,2);
+	//let timeOut =0;
 	setTimeout(()=>{
 
 		let opt = [
@@ -76,7 +77,15 @@ app.use('/tileloader/:z/:x/:y', function (req, res, next) {
 				method: req.method,
 				path: '/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
 				headers: req.headers
+			},
+			{
+				port: 8081,
+				hostname: '192.168.88.253',
+				method: req.method,
+				path: '/map/osm/'+ req.params.z+'/'+req.params.x+'/'+req.params.y,
+				headers: req.headers
 			}
+
 
 			/* ,{
 				port: 8081,
